@@ -1,0 +1,211 @@
+{
+  "version": "2.0.0",
+  "updated": "2025-01-07",
+  
+  "platforms": {
+    "CW": {
+      "name": "Claude Web",
+      "type": "ai",
+      "can_reach": {
+        "direct": ["n8n_webhook", "github_api", "sheets_api", "memory_api_tunnel", "web_urls", "supabase_api", "airtable_api"],
+        "via_mcp": ["airtable", "notion", "canva", "google_drive", "stripe", "paypal", "huggingface"],
+        "via_tunnel": ["memory_api", "n8n"],
+        "via_buddy": ["localhost", "local_files", "private_network"]
+      },
+      "cannot_reach": ["localhost_direct", "local_filesystem"],
+      "capabilities": ["web_search", "artifact_creation", "mcp_tools", "file_processing", "complex_reasoning"],
+      "buddy_for": ["web_search", "artifacts", "document_generation", "mcp_operations"],
+      "needs_buddy_for": ["local_files", "local_python", "localhost_access"]
+    },
+    
+    "CD": {
+      "name": "Claude Desktop",
+      "type": "ai",
+      "can_reach": {
+        "direct": ["localhost", "local_files", "memory_api_local", "n8n_local", "github_cli", "qnap", "supabase_api"],
+        "via_mcp": ["filesystem", "memory", "databases", "desktop_commander"]
+      },
+      "cannot_reach": ["web_search_native"],
+      "capabilities": ["local_python", "local_bash", "file_operations", "git", "mcp_local", "database_queries"],
+      "buddy_for": ["local_files", "local_execution", "git_commits", "localhost_access"],
+      "needs_buddy_for": ["web_search"]
+    },
+    
+    "GPT": {
+      "name": "ChatGPT",
+      "type": "ai",
+      "can_reach": {
+        "direct": ["web_browse", "code_interpreter"],
+        "via_tunnel": ["memory_api", "n8n"],
+        "via_mcp": ["public_mcp_servers"]
+      },
+      "cannot_reach": ["localhost_direct", "local_filesystem"],
+      "capabilities": ["web_browsing", "dalle_images", "code_sandbox", "mcp_public"],
+      "buddy_for": ["image_generation", "code_sandbox", "alternative_reasoning"],
+      "needs_buddy_for": ["localhost", "local_files", "persistent_storage"]
+    },
+    
+    "N8N": {
+      "name": "n8n",
+      "type": "automation",
+      "can_reach": {
+        "direct": ["everything"],
+        "local": ["memory_api", "qnap", "windows_pc", "postgres"],
+        "cloud": ["github", "sheets", "airtable", "notion", "supabase", "openai", "any_api"]
+      },
+      "capabilities": ["webhooks", "scheduling", "api_integrations", "data_transform", "file_ops", "email", "database"],
+      "buddy_for": ["ALL_ROUTING", "scheduled_tasks", "api_calls", "data_transforms"],
+      "needs_buddy_for": ["complex_reasoning", "image_generation"]
+    },
+    
+    "SUPA": {
+      "name": "Supabase",
+      "type": "database",
+      "can_reach": {
+        "direct": ["postgres", "storage", "edge_functions"],
+        "via_webhooks": ["n8n", "any_http_endpoint"]
+      },
+      "capabilities": ["postgres_db", "auth", "storage", "edge_functions", "realtime", "webhooks", "row_level_security"],
+      "buddy_for": ["persistent_storage", "auth", "file_storage", "realtime_sync"],
+      "needs_buddy_for": ["complex_logic"],
+      "can_replace": ["memory_api"],
+      "endpoints": {
+        "api": "https://{project}.supabase.co/rest/v1/",
+        "auth": "https://{project}.supabase.co/auth/v1/",
+        "storage": "https://{project}.supabase.co/storage/v1/"
+      }
+    },
+    
+    "AIR": {
+      "name": "Airtable",
+      "type": "database",
+      "can_reach": {
+        "direct": ["airtable_api"],
+        "via_automations": ["webhooks", "scripts"]
+      },
+      "capabilities": ["structured_data", "views", "automations", "forms", "interfaces"],
+      "buddy_for": ["visual_data", "human_editable_tasks", "simple_automations"],
+      "mcp_available": true
+    },
+    
+    "NOT": {
+      "name": "Notion",
+      "type": "docs",
+      "can_reach": {
+        "direct": ["notion_api"]
+      },
+      "capabilities": ["rich_docs", "databases", "wikis", "comments"],
+      "buddy_for": ["documentation", "knowledge_base", "project_notes"],
+      "mcp_available": true
+    },
+    
+    "SHEETS": {
+      "name": "Google Sheets",
+      "type": "bridge",
+      "capabilities": ["data_storage", "polling_trigger", "apps_script", "universal_access"],
+      "role": "universal_fallback_bridge"
+    },
+    
+    "GITHUB": {
+      "name": "GitHub",
+      "type": "bridge",
+      "capabilities": ["version_control", "actions", "universal_storage", "commit_triggers"],
+      "role": "universal_fallback_bridge"
+    },
+    
+    "CF": {
+      "name": "Cloudflare",
+      "type": "infrastructure",
+      "can_reach": {
+        "direct": ["workers", "d1", "r2", "kv", "tunnels"]
+      },
+      "capabilities": ["tunnels", "workers", "d1_database", "r2_storage", "kv_store", "dns"],
+      "buddy_for": ["public_endpoints", "edge_compute", "cdn"],
+      "mcp_available": true
+    },
+    
+    "VERCEL": {
+      "name": "Vercel",
+      "type": "deployment",
+      "capabilities": ["frontend_deploy", "serverless_functions", "edge_functions"],
+      "buddy_for": ["web_deployments", "api_endpoints"],
+      "mcp_available": true
+    },
+    
+    "HF": {
+      "name": "Hugging Face",
+      "type": "ml",
+      "capabilities": ["model_inference", "spaces", "datasets", "embeddings"],
+      "buddy_for": ["ml_models", "embeddings", "inference"],
+      "mcp_available": true
+    },
+    
+    "CANVA": {
+      "name": "Canva",
+      "type": "design",
+      "capabilities": ["design_generation", "templates", "export", "brand_kits"],
+      "buddy_for": ["graphics", "presentations", "social_media_assets"],
+      "mcp_available": true
+    },
+    
+    "STRIPE": {
+      "name": "Stripe",
+      "type": "payments",
+      "capabilities": ["payments", "subscriptions", "invoices"],
+      "buddy_for": ["payment_processing", "subscription_management"],
+      "mcp_available": true
+    },
+    
+    "PAYPAL": {
+      "name": "PayPal", 
+      "type": "payments",
+      "capabilities": ["payments", "invoices"],
+      "buddy_for": ["payment_processing"],
+      "mcp_available": true
+    }
+  },
+  
+  "buddy_matrix": {
+    "need_localhost": ["N8N", "CD"],
+    "need_web_search": ["CW", "GPT"],
+    "need_local_files": ["CD"],
+    "need_image_gen": ["GPT", "CANVA"],
+    "need_scheduling": ["N8N"],
+    "need_database": ["SUPA", "AIR", "N8N"],
+    "need_auth": ["SUPA"],
+    "need_storage": ["SUPA", "CF"],
+    "need_ml": ["HF"],
+    "need_deploy": ["VERCEL", "CF"],
+    "need_payments": ["STRIPE", "PAYPAL"],
+    "need_design": ["CANVA"],
+    "need_docs": ["NOT"],
+    "universal_proxy": ["N8N"],
+    "universal_fallback": ["SHEETS", "GITHUB", "SUPA"]
+  },
+  
+  "routing_priority": [
+    "direct_mcp",
+    "direct_api", 
+    "n8n_webhook",
+    "supabase_api",
+    "memory_api_queue",
+    "airtable_automation",
+    "sheets_queue",
+    "github_commit",
+    "manual_handover"
+  ],
+  
+  "mcp_connectors_available": [
+    "Canva",
+    "Notion",
+    "PayPal", 
+    "Stripe",
+    "Hugging Face",
+    "Cloudflare Developer Platform",
+    "Netlify",
+    "Vercel",
+    "Airtable MCP Server",
+    "Google Drive",
+    "Scholar Gateway"
+  ]
+}

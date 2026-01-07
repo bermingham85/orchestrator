@@ -1,0 +1,84 @@
+{
+  "version": "1.0.0",
+  "source": "MASTER_PROMPT_LIBRARY.md",
+  "local_path": "C:\\Users\\bermi\\Projects\\MASTER_PROMPT_LIBRARY.md",
+  
+  "shortcuts": {
+    "[resume]": {
+      "description": "Resume previous work/context",
+      "action": "Load context from memory API, identify last task, continue"
+    },
+    "[n8n]": {
+      "description": "n8n workflow assistance",
+      "action": "Help create, debug, or optimize n8n workflows"
+    },
+    "[handover]": {
+      "description": "Create handover document for another platform",
+      "action": "Generate formatted handover doc with task, context, return method"
+    },
+    "[agent]": {
+      "description": "Agent creation/management",
+      "action": "Create or manage AI agents in the agent-agency system"
+    },
+    "[mcp]": {
+      "description": "MCP server assistance",
+      "action": "Help with Model Context Protocol server setup or debugging"
+    },
+    "[architect]": {
+      "description": "System architecture mode",
+      "action": "Design system architecture with diagrams and specifications"
+    },
+    "[gpt2sys]": {
+      "description": "Convert GPT conversation to system prompt",
+      "action": "Transform conversation patterns into reusable system prompts"
+    },
+    "[organize]": {
+      "description": "Organize files/projects",
+      "action": "Help organize and structure files, folders, or projects"
+    },
+    "[transactions]": {
+      "description": "Financial transaction categorization",
+      "action": "Process and categorize financial transactions"
+    },
+    "[governance]": {
+      "description": "Governance/policy mode",
+      "action": "Help with governance rules, policies, documentation"
+    },
+    "[template]": {
+      "description": "Create reusable template",
+      "action": "Generate templates for common patterns"
+    },
+    "[midjourney]": {
+      "description": "Midjourney prompt assistance",
+      "action": "Help craft Midjourney image generation prompts"
+    },
+    "[save prompt]": {
+      "description": "Save current prompt to library",
+      "action": "Extract and save effective prompt to MASTER_PROMPT_LIBRARY"
+    }
+  },
+  
+  "orchestrator_triggers": {
+    "#bootstrap": {
+      "description": "Start orchestration session",
+      "action": "Load context from memory API, check capabilities, identify tasks"
+    },
+    "#audit": {
+      "description": "Audit task efficiency",
+      "action": "Review completed task, score efficiency 1-6, suggest optimizations"
+    },
+    "#inherit": {
+      "description": "Check existing before creating",
+      "action": "Search playbook, shortcuts, projects before building anything new"
+    },
+    "#checkpoint": {
+      "description": "End session checkpoint",
+      "action": "Save session summary, sync context, update playbook"
+    }
+  },
+  
+  "usage": {
+    "in_message": "Type [shortcut] or #trigger in your message",
+    "processing": "AI reads this file, finds matching entry, executes action with conversation context"
+  }
+}

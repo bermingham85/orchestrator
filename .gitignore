@@ -1,0 +1,24 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Secrets (never commit)
+*.env
+secrets/
+credentials.json
+
+# Logs (optional - may want to track)
+# logs/sessions/*.json
+
+# Temp files
+*.tmp
+*.bak
+
+# Node modules (if any scripts added)
+node_modules/

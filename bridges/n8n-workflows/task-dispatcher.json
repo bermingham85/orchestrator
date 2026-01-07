@@ -1,0 +1,174 @@
+{
+  "name": "Task Dispatcher",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "task-dispatcher",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.target }}",
+              "operation": "equals",
+              "value2": "N8N"
+            }
+          ]
+        }
+      },
+      "id": "switch-target",
+      "name": "Route by Target",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.50.100:8765/api/tasks",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "task_id",
+              "value": "={{ $json.task_id }}"
+            },
+            {
+              "name": "source",
+              "value": "={{ $json.source }}"
+            },
+            {
+              "name": "target",
+              "value": "={{ $json.target }}"
+            },
+            {
+              "name": "action",
+              "value": "={{ $json.action }}"
+            },
+            {
+              "name": "payload",
+              "value": "={{ JSON.stringify($json.payload) }}"
+            },
+            {
+              "name": "status",
+              "value": "QUEUED"
+            }
+          ]
+        }
+      },
+      "id": "queue-for-ai",
+      "name": "Queue for AI Platform",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Internal n8n execution\nconst task = items[0].json;\n\n// Log task\nconsole.log('Executing internal task:', task.task_id);\n\n// Return for next node\nreturn [{ json: { ...task, status: 'PROCESSING' } }];"
+      },
+      "id": "internal-execution",
+      "name": "Internal Execution",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.50.100:8765/api/events",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "task_dispatched"
+            },
+            {
+              "name": "task_id",
+              "value": "={{ $json.task_id }}"
+            },
+            {
+              "name": "target",
+              "value": "={{ $json.target }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "log-event",
+      "name": "Log to Memory API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Route by Target",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Target": {
+      "main": [
+        [
+          {
+            "node": "Queue for AI Platform",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Internal Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Queue for AI Platform": {
+      "main": [
+        [
+          {
+            "node": "Log to Memory API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Internal Execution": {
+      "main": [
+        [
+          {
+            "node": "Log to Memory API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "tags": ["orchestrator", "task-routing"]
+}

@@ -1,0 +1,12 @@
+{
+  "task_id": "T1704628800000_example",
+  "source": "SYSTEM",
+  "target": "ANY",
+  "action": "example_task",
+  "payload": {
+    "message": "This is an example task file. Delete this and add real tasks."
+  },
+  "status": "EXAMPLE",
+  "created": "2025-01-07T12:00:00Z",
+  "notes": "Task files in this directory trigger GitHub Actions and get routed to target platforms"
+}

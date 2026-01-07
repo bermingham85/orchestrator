@@ -1,0 +1,150 @@
+{
+  "version": "1.0.0",
+  "updated": "2025-01-07",
+  
+  "routes": {
+    "CW_to_CD": {
+      "primary": {
+        "method": "memory_api_queue",
+        "url": "https://memory.bermech.com/api/tasks",
+        "action": "POST task with target=CD"
+      },
+      "fallback_1": {
+        "method": "sheets_queue",
+        "sheet": "ORCHESTRATOR_HQ",
+        "tab": "TASK_QUEUE"
+      },
+      "fallback_2": {
+        "method": "github_commit",
+        "repo": "berminghammchl/orchestrator",
+        "path": "tasks/pending/"
+      }
+    },
+    
+    "CW_to_GPT": {
+      "primary": {
+        "method": "memory_api_queue",
+        "url": "https://memory.bermech.com/api/tasks",
+        "action": "POST task with target=GPT"
+      },
+      "fallback_1": {
+        "method": "sheets_queue",
+        "sheet": "ORCHESTRATOR_HQ",
+        "tab": "TASK_QUEUE"
+      },
+      "fallback_2": {
+        "method": "handover_doc",
+        "template": "platforms/handover-template.md"
+      }
+    },
+    
+    "CW_to_N8N": {
+      "primary": {
+        "method": "direct_webhook",
+        "url": "https://n8n.bermech.com/webhook/task-dispatcher"
+      },
+      "fallback_1": {
+        "method": "sheets_trigger",
+        "sheet": "ORCHESTRATOR_HQ"
+      },
+      "fallback_2": {
+        "method": "github_action",
+        "repo": "berminghammchl/orchestrator"
+      }
+    },
+    
+    "CD_to_CW": {
+      "primary": {
+        "method": "memory_api_queue",
+        "url": "http://localhost:8765/api/tasks",
+        "action": "POST task with target=CW"
+      },
+      "fallback_1": {
+        "method": "sheets_queue",
+        "sheet": "ORCHESTRATOR_HQ"
+      },
+      "fallback_2": {
+        "method": "handover_doc",
+        "template": "platforms/handover-template.md"
+      }
+    },
+    
+    "CD_to_N8N": {
+      "primary": {
+        "method": "direct_local",
+        "url": "http://192.168.50.246:5678/webhook/task-dispatcher"
+      },
+      "fallback_1": {
+        "method": "mcp",
+        "server": "n8n"
+      },
+      "fallback_2": {
+        "method": "sheets_trigger",
+        "sheet": "ORCHESTRATOR_HQ"
+      }
+    },
+    
+    "GPT_to_N8N": {
+      "primary": {
+        "method": "webhook_tunnel",
+        "url": "https://n8n.bermech.com/webhook/task-dispatcher"
+      },
+      "fallback_1": {
+        "method": "mcp_tunnel",
+        "url": "https://n8n.bermech.com/mcp"
+      },
+      "fallback_2": {
+        "method": "sheets_queue",
+        "sheet": "ORCHESTRATOR_HQ"
+      }
+    },
+    
+    "N8N_to_ANY_AI": {
+      "primary": {
+        "method": "memory_api_queue",
+        "url": "http://192.168.50.100:8765/api/tasks",
+        "note": "AI platforms poll memory API"
+      },
+      "fallback_1": {
+        "method": "sheets_update",
+        "sheet": "ORCHESTRATOR_HQ"
+      },
+      "fallback_2": {
+        "method": "github_commit",
+        "repo": "berminghammchl/orchestrator"
+      }
+    },
+    
+    "ANY_to_ANY": {
+      "universal_hub": {
+        "method": "n8n_webhook",
+        "url": "https://n8n.bermech.com/webhook/task-dispatcher"
+      },
+      "universal_fallback_1": {
+        "method": "sheets",
+        "sheet": "ORCHESTRATOR_HQ"
+      },
+      "universal_fallback_2": {
+        "method": "github",
+        "repo": "berminghammchl/orchestrator"
+      }
+    }
+  },
+  
+  "endpoints": {
+    "memory_api_local": "http://localhost:8765",
+    "memory_api_tunnel": "https://memory.bermech.com",
+    "n8n_local": "http://192.168.50.246:5678",
+    "n8n_tunnel": "https://n8n.bermech.com",
+    "n8n_task_webhook": "https://n8n.bermech.com/webhook/task-dispatcher",
+    "github_repo": "https://github.com/berminghammchl/orchestrator",
+    "github_raw": "https://raw.githubusercontent.com/berminghammchl/orchestrator/main",
+    "sheets": "ORCHESTRATOR_HQ"
+  },
+  
+  "health_checks": {
+    "memory_api": "https://memory.bermech.com/health",
+    "n8n": "https://n8n.bermech.com/healthz",
+    "github": "https://api.github.com/repos/berminghammchl/orchestrator"
+  }
+}

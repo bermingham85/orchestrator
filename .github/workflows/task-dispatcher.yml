@@ -1,0 +1,140 @@
+# .github/workflows/task-dispatcher.yml
+# Triggers when tasks are committed to the orchestrator repo
+
+name: Task Dispatcher
+
+on:
+  push:
+    paths:
+      - 'tasks/pending/*.json'
+  
+  repository_dispatch:
+    types: [task_dispatch]
+  
+  workflow_dispatch:
+    inputs:
+      task_json:
+        description: 'Task JSON payload'
+        required: false
+        type: string
+
+env:
+  N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK }}
+  MEMORY_API: ${{ secrets.MEMORY_API }}
+
+jobs:
+  dispatch-file-tasks:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Get changed files
+        id: changed
+        run: |
+          echo "files=$(git diff --name-only HEAD~1 HEAD | grep 'tasks/pending/.*\.json' | tr '\n' ' ')" >> $GITHUB_OUTPUT
+      
+      - name: Process pending tasks
+        if: steps.changed.outputs.files != ''
+        run: |
+          for task_file in ${{ steps.changed.outputs.files }}; do
+            if [ -f "$task_file" ]; then
+              echo "Processing: $task_file"
+              
+              # Read task
+              task=$(cat "$task_file")
+              target=$(echo "$task" | jq -r '.target')
+              task_id=$(echo "$task" | jq -r '.task_id')
+              
+              echo "Task ID: $task_id, Target: $target"
+              
+              # Route based on target
+              case $target in
+                "N8N"|"n8n")
+                  curl -X POST "$N8N_WEBHOOK" \
+                    -H "Content-Type: application/json" \
+                    -d "$task"
+                  ;;
+                "MEMORY"|"memory")
+                  curl -X POST "$MEMORY_API/api/tasks" \
+                    -H "Content-Type: application/json" \
+                    -d "$task"
+                  ;;
+                *)
+                  # Default: route through n8n
+                  curl -X POST "$N8N_WEBHOOK" \
+                    -H "Content-Type: application/json" \
+                    -d "$task"
+                  ;;
+              esac
+              
+              # Move to processing
+              mkdir -p tasks/processing
+              mv "$task_file" "tasks/processing/$(basename $task_file)"
+              
+              echo "Dispatched: $task_id"
+            fi
+          done
+      
+      - name: Commit status changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add tasks/
+          git diff --staged --quiet || git commit -m "Tasks dispatched [skip ci]"
+          git push || true
+
+  dispatch-api-task:
+    if: github.event_name == 'repository_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Process API dispatch
+        run: |
+          task='${{ toJson(github.event.client_payload) }}'
+          target=$(echo "$task" | jq -r '.target')
+          task_id=$(echo "$task" | jq -r '.task_id')
+          
+          echo "API Task ID: $task_id, Target: $target"
+          
+          # Save task to file for record
+          mkdir -p tasks/processing
+          echo "$task" > "tasks/processing/${task_id}.json"
+          
+          # Route
+          case $target in
+            "N8N"|"n8n")
+              curl -X POST "$N8N_WEBHOOK" \
+                -H "Content-Type: application/json" \
+                -d "$task"
+              ;;
+            *)
+              curl -X POST "$N8N_WEBHOOK" \
+                -H "Content-Type: application/json" \
+                -d "$task"
+              ;;
+          esac
+      
+      - name: Commit task record
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add tasks/
+          git diff --staged --quiet || git commit -m "API task processed [skip ci]"
+          git push || true
+
+  manual-dispatch:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.task_json != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process manual task
+        run: |
+          task='${{ github.event.inputs.task_json }}'
+          echo "Manual task: $task"
+          
+          curl -X POST "$N8N_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$task"

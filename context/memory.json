@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-01-07T12:00:00Z",
+  "last_updated_by": "CW",
+  
+  "user": {
+    "name": "Michael Bermingham",
+    "location": "Dublin, Ireland",
+    "timezone": "Europe/Dublin"
+  },
+  
+  "businesses": {
+    "bermech_limited": {
+      "type": "Airbnb rental properties",
+      "locations": ["Hampton Wood Green (home)", "Chapelizod (Airbnb)"]
+    },
+    "jesse_music": {
+      "type": "Creative/music production"
+    },
+    "taleweaver": {
+      "type": "Book automation platform"
+    },
+    "balding_pig": {
+      "type": "Satirical content brand"
+    }
+  },
+  
+  "infrastructure": {
+    "qnap_nas": {
+      "ip": "192.168.50.246",
+      "services": ["n8n", "cloudflared", "postgres"]
+    },
+    "windows_pc": {
+      "services": ["memory_api:8765", "claude_desktop"]
+    },
+    "cloudflare_tunnel": {
+      "domain": "bermech.com",
+      "hostnames": ["n8n.bermech.com", "memory.bermech.com"]
+    }
+  },
+  
+  "active_projects": [
+    {
+      "name": "orchestrator",
+      "status": "in_progress",
+      "description": "Cross-platform AI coordination system"
+    },
+    {
+      "name": "jesse-novel-factory",
+      "status": "active",
+      "description": "24-book fantasy/comedy series automation"
+    },
+    {
+      "name": "agent-agency-mcp",
+      "status": "active",
+      "description": "18 AI agents coordination"
+    },
+    {
+      "name": "bpp1-form",
+      "status": "pending",
+      "description": "Bereaved Partner's Pension form completion"
+    }
+  ],
+  
+  "preferences": {
+    "adhd_optimized": true,
+    "complete_solutions_only": true,
+    "step_by_step": true,
+    "modular_approach": true,
+    "auto_save_patterns": true
+  },
+  
+  "recent_sessions": []
+}

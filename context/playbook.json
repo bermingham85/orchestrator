@@ -1,0 +1,112 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-01-07T12:00:00Z",
+  
+  "proven_commands": {
+    "restart_n8n": {
+      "command": "docker restart n8n",
+      "where": "QNAP SSH or Container Station",
+      "verified": "2025-01-07"
+    },
+    "check_tunnel": {
+      "command": "curl https://n8n.bermech.com/healthz",
+      "expected": "200 OK",
+      "verified": "2025-01-07"
+    },
+    "get_windows_ip": {
+      "command": "(Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.IPAddress -like '192.168.*'}).IPAddress",
+      "where": "PowerShell",
+      "verified": "2025-01-07"
+    }
+  },
+  
+  "pathways": {
+    "setup_cloudflare_hostname": {
+      "description": "Add new hostname to Cloudflare tunnel",
+      "steps": [
+        "Go to https://one.dash.cloudflare.com/",
+        "Zero Trust → Networks → Tunnels",
+        "Click bermech.com tunnel → Configure",
+        "Public Hostname → Add",
+        "Fill: subdomain, domain=bermech.com, type=HTTP, URL=local_ip:port",
+        "Access: OFF (or configure auth)",
+        "Save"
+      ],
+      "use_count": 2,
+      "last_used": "2025-01-07"
+    },
+    
+    "create_n8n_webhook_workflow": {
+      "description": "Create webhook-triggered workflow in n8n",
+      "steps": [
+        "Open https://n8n.bermech.com",
+        "New Workflow",
+        "Add Webhook node (trigger)",
+        "Set path (e.g., /task-dispatcher)",
+        "Add processing nodes",
+        "Activate workflow",
+        "Test with curl POST"
+      ],
+      "use_count": 5,
+      "last_used": "2025-01-07"
+    },
+    
+    "setup_apps_script": {
+      "description": "Add Google Apps Script to spreadsheet",
+      "steps": [
+        "Open Google Sheet",
+        "Extensions → Apps Script",
+        "Delete default code",
+        "Paste script from bridges/apps-script.js",
+        "Save",
+        "Run initializeSheet() and authorize",
+        "Run setupTriggers()",
+        "Deploy as web app if needed"
+      ],
+      "use_count": 1,
+      "last_used": "2025-01-07"
+    },
+    
+    "cross_platform_task": {
+      "description": "Send task from one AI platform to another",
+      "steps": [
+        "Check routes/ROUTING_TABLE.md for best route",
+        "Create task JSON with task_id, source, target, payload",
+        "POST to memory API or write to Sheets/GitHub",
+        "Target platform polls and picks up",
+        "Target executes and POSTs result",
+        "Source polls for completion"
+      ],
+      "use_count": 0,
+      "last_used": null
+    }
+  },
+  
+  "templates": {
+    "task_json": {
+      "task_id": "T{timestamp}",
+      "source": "{platform_code}",
+      "target": "{platform_code}",
+      "action": "{action_name}",
+      "payload": {},
+      "status": "PENDING",
+      "created": "{iso_timestamp}",
+      "priority": "normal"
+    },
+    
+    "handover_doc": "## HANDOVER: {source} → {target}\n\n**Task ID:** {task_id}\n**Action Required:** {action}\n**Context:** {context}\n**Return Method:** POST to {return_url}"
+  },
+  
+  "automation_candidates": [
+    {
+      "pattern": "Cross-platform task routing",
+      "frequency": "every task",
+      "action": "Already automated via n8n task-dispatcher"
+    },
+    {
+      "pattern": "Session context sync",
+      "frequency": "every 5 min",
+      "action": "Create n8n scheduled workflow"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "default_chain": ["direct", "n8n", "sheets", "github"],
+  "platform_specific": {
+    "CW_to_CD": ["n8n_webhook", "sheets_task", "github_commit"],
+    "CW_to_GPT": ["sheets_task", "github_commit"],
+    "CD_to_CW": ["sheets_task", "github_commit"],
+    "CD_to_GPT": ["sheets_task", "n8n_webhook"],
+    "GPT_to_CW": ["sheets_task", "github_commit"],
+    "GPT_to_CD": ["n8n_webhook", "sheets_task", "github_commit"]
+  },
+  "endpoints": {
+    "n8n_webhook": "https://n8n.bermech.com/webhook/task-dispatcher",
+    "sheets_task": "ORCHESTRATOR_HQ spreadsheet TASK_QUEUE tab",
+    "github_commit": "tasks/pending/{task_id}.json"
+  }
+}
