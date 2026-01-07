@@ -1,0 +1,7 @@
+{
+  "task_id": "WARP_005",
+  "completed_by": "WARP",
+  "completed_at": "2026-01-07T19:38:15Z",
+  "status": "BLOCKED",
+  "result": "Cannot complete - requires secret values for N8N_WEBHOOK and MEMORY_API. GitHub CLI (gh v2.83.2) is available. User needs to run: `gh secret set N8N_WEBHOOK -b \"<value>\" -R bermingham85/orchestrator` and `gh secret set MEMORY_API -b \"<value>\" -R bermingham85/orchestrator`. Alternative: Set via GitHub UI at https://github.com/bermingham85/orchestrator/settings/secrets/actions"
+}
