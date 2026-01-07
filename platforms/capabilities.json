@@ -1,0 +1,30 @@
+{
+  "CW": {
+    "name": "Claude Web",
+    "can_reach": ["n8n_public", "github", "sheets", "memory_api_tunnel"],
+    "cannot_reach": ["localhost", "CD_direct", "GPT_direct"],
+    "buddy_for": ["web_search", "create_artifacts", "mcp_tools"],
+    "needs_buddy_for": ["local_files", "run_python_local", "git_operations"]
+  },
+  "CD": {
+    "name": "Claude Desktop",
+    "can_reach": ["localhost", "n8n_local", "github", "sheets", "memory_api_local", "filesystem"],
+    "cannot_reach": ["CW_direct", "GPT_direct"],
+    "buddy_for": ["local_files", "run_python_local", "git_operations", "mcp_servers"],
+    "needs_buddy_for": ["web_search"]
+  },
+  "GPT": {
+    "name": "ChatGPT",
+    "can_reach": ["n8n_tunnel", "github", "sheets", "memory_api_tunnel"],
+    "cannot_reach": ["localhost", "CW_direct", "CD_direct"],
+    "buddy_for": ["dalle_images", "code_interpreter", "web_browsing"],
+    "needs_buddy_for": ["local_files", "mcp_private"]
+  },
+  "N8N": {
+    "name": "n8n",
+    "can_reach": ["ALL"],
+    "cannot_reach": [],
+    "buddy_for": ["routing", "scheduling", "api_calls", "webhooks"],
+    "needs_buddy_for": ["ai_reasoning"]
+  }
+}

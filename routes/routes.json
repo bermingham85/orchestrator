@@ -1,0 +1,25 @@
+{
+  "CW": {
+    "n8n": {"method": "HTTP", "url": "https://n8n.bermech.com/webhook/task-dispatcher"},
+    "memory": {"method": "HTTP", "url": "https://memory.bermech.com"},
+    "github": {"method": "API", "url": "https://api.github.com"},
+    "CD": {"method": "BUDDY", "via": "n8n"},
+    "GPT": {"method": "BUDDY", "via": "sheets"}
+  },
+  "CD": {
+    "n8n": {"method": "HTTP", "url": "http://192.168.50.246:5678"},
+    "memory": {"method": "HTTP", "url": "http://localhost:8765"},
+    "github": {"method": "CLI", "command": "gh"},
+    "CW": {"method": "BUDDY", "via": "sheets"},
+    "GPT": {"method": "BUDDY", "via": "sheets"}
+  },
+  "GPT": {
+    "n8n": {"method": "HTTP", "url": "https://n8n.bermech.com/webhook/task-dispatcher"},
+    "memory": {"method": "HTTP", "url": "https://memory.bermech.com"},
+    "CW": {"method": "BUDDY", "via": "sheets"},
+    "CD": {"method": "BUDDY", "via": "n8n"}
+  },
+  "N8N": {
+    "all": {"method": "HTTP", "note": "Can reach everything directly"}
+  }
+}

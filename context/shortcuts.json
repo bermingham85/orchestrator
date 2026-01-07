@@ -1,0 +1,7 @@
+{
+  "shortcuts": {
+    "#bootstrap": "Run BOOTSTRAP.md sequence",
+    "#checkpoint": "Save session state before closing",
+    "#handoff": "Create task for another platform"
+  }
+}

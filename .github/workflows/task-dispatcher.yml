@@ -1,0 +1,47 @@
+name: Task Dispatcher
+
+on:
+  push:
+    paths:
+      - 'tasks/pending/*.json'
+  repository_dispatch:
+    types: [task_dispatch]
+  workflow_dispatch:
+    inputs:
+      task_json:
+        description: 'Task JSON payload'
+        required: false
+        type: string
+
+env:
+  N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK }}
+  MEMORY_API: ${{ secrets.MEMORY_API }}
+
+jobs:
+  dispatch-file-tasks:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Process pending tasks
+        run: |
+          for task_file in $(git diff --name-only HEAD~1 HEAD | grep 'tasks/pending/.*\.json'); do
+            if [ -f "$task_file" ]; then
+              task=$(cat "$task_file")
+              target=$(echo "$task" | jq -r '.target')
+              curl -X POST "$N8N_WEBHOOK" -H "Content-Type: application/json" -d "$task"
+              mkdir -p tasks/processing
+              mv "$task_file" "tasks/processing/$(basename $task_file)"
+            fi
+          done
+      
+      - name: Commit status
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add tasks/
+          git diff --staged --quiet || git commit -m "Tasks dispatched [skip ci]"
+          git push || true
