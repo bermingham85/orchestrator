@@ -27,6 +27,13 @@ Without explicit override, ALL governance processes apply.
 - Compile and run code
 - Execute tests and linters
 - Process automation
+- **Docker operations:**
+  - Build images from Dockerfiles
+  - Run containers with proper configuration
+  - Execute docker-compose workflows
+  - Test container health checks
+  - Generate Dockerfiles from templates
+  - Manage multi-service environments
 
 ## Cannot Do
 - Design system architectures (belongs to Claude)
