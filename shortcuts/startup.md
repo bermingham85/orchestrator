@@ -1,7 +1,7 @@
 # [startup] - Session Bootstrap
 
 ## Purpose
-Single command to get any conversation fully operational. Loads memory, navigation, orchestration, and governance. Ready to execute immediately after.
+Single command to get any conversation fully operational. Loads memory, bidirectional routing, tools registry, and governance. Ready to execute immediately after.
 
 ## Trigger
 `[startup]` or `[startup] {project-name}`
@@ -22,35 +22,38 @@ Single command to get any conversation fully operational. Loads memory, navigati
    - Apply any stored preferences/rules
 ```
 
-### Phase 2: Navigation & Orchestration (3 seconds)
+### Phase 2: Bidirectional Routing (3 seconds)
 ```
 Load from GitHub (raw URLs for speed):
 
-1. Routes: routes/routes.json
-   - Platform-to-platform communication paths
-   - Know how to reach any system
+1. CHANNELS: routes/CHANNELS.json
+   - ALL platform-to-platform bidirectional paths
+   - Outbound AND inbound for each pair
+   - Transport methods: HTTP, MCP, filesystem, sheets, github
 
-2. Fallbacks: routes/fallbacks.json  
-   - Backup pathways when primary fails
-   - n8n_webhook → sheets_task → github_commit
+2. Capabilities: platforms/capabilities.json v1.1.0
+   - routes_to: How to send TO each platform
+   - receives_from: How to receive FROM each platform
+   - buddy assignments
 
-3. Capabilities: platforms/capabilities.json
-   - What each platform can/cannot do
-   - Buddy assignments
+3. Tools: tools/REGISTRY.json
+   - Localhost tool locations and ports
+   - API endpoints for each tool
+   - Trigger methods by platform
 ```
 
 ### Phase 3: Governance Quick-Load (2 seconds)
 ```
 Load essential rules (not full docs):
 
-1. From docs/SYSTEM-CONSTRAINTS.md:
+1. From docs/DOC-CONTROL.md:
+   - Versioning rules
+   - Change process
+
+2. From docs/SYSTEM-CONSTRAINTS.md:
    - Section 1: Absolute Rules (NO user input, NO tangents, FIX as you go)
    - Section 2: Error hierarchy
    - Section 8: Quick reference
-
-2. From docs/PLATFORM-CAPABILITIES-REGISTRY.md:
-   - Section 4: Task Routing Matrix (Primary + Fallback)
-   - Section 6: Quick Reference
 ```
 
 ### Phase 4: Project Context (if specified)
@@ -71,7 +74,8 @@ Output (compact, no fluff):
 
 ## Ready
 **Memory:** {status}
-**Routes:** Loaded (CW↔CD↔n8n↔GPT)
+**Channels:** 13 bidirectional routes loaded
+**Tools:** {count} localhost tools available
 **Governance:** Active
 **Project:** {name or "General"}
 **Last session:** {date} - {topic}
@@ -84,13 +88,34 @@ What's the task?
 ```
 BASE: https://raw.githubusercontent.com/bermingham85/orchestrator/main/
 
-routes/routes.json
-routes/fallbacks.json
-platforms/capabilities.json
+routes/CHANNELS.json          <- BIDIRECTIONAL ROUTING
+platforms/capabilities.json   <- PLATFORM ROUTES
+tools/REGISTRY.json          <- LOCALHOST TOOLS
+docs/DOC-CONTROL.md
 docs/SYSTEM-CONSTRAINTS.md
-docs/PLATFORM-CAPABILITIES-REGISTRY.md
 context/INDEX.md
 communications/handovers/
+```
+
+## Key Bidirectional Channels
+```
+CW↔CD:   GitHub handovers (both directions)
+CW↔GPT:  Google Sheets AI_BRIDGE tabs
+CW↔N8N:  HTTP webhook out, GitHub workaround in
+CD↔GPT:  chatgpt-mcp-server (bidirectional MCP)
+CD↔N8N:  HTTP out, filesystem in
+CD↔WARP: filesystem warp-tasks/ and warp-outputs/
+ALL→GH:  Delivery hub for all final outputs
+```
+
+## Localhost Tools (CD/WARP only)
+```
+prompt-engineer-agent:  file:///C:/Users/bermi/Projects/prompt-engineer-agent/index.html
+SmartInbox:            localhost:8000 (backend), localhost:3000 (frontend)
+asset-vault-app:       localhost:8000 (backend), localhost:5173 (frontend)
+chatgpt-mcp-server:    localhost:3000 (MCP SSE at /sse)
+memory-api:            localhost:8765 (tunnel: memory.bermech.com)
+n8n-task-dispatcher:   localhost:5678/webhook/task-dispatcher
 ```
 
 ## Memory API Endpoints
@@ -106,15 +131,17 @@ POST /api/memory/revision  - Trigger memory update
 
 ## Platform-Specific Behavior
 
-### Claude Web
+### Claude Web (CW)
 - Use web_fetch for GitHub raw URLs
 - Cannot reach localhost, use tunnel if needed
-- Full MCP tools available after startup
+- Routes TO: CD (handover), GPT (sheets), N8N (webhook)
+- Receives FROM: CD (handover), GPT (sheets), N8N (github)
 
-### Claude Desktop  
+### Claude Desktop (CD)
 - Use filesystem MCP for local files
-- Direct localhost access
+- Direct localhost access to all tools
 - Full MCP + local tools available
+- Routes TO/FROM: All platforms via multiple methods
 
 ### Warp
 - Use curl for API calls
@@ -124,15 +151,12 @@ POST /api/memory/revision  - Trigger memory update
 ## Token Budget
 ```
 Phase 1 (Memory):       ~200 tokens
-Phase 2 (Navigation):   ~300 tokens  
-Phase 3 (Governance):   ~500 tokens
+Phase 2 (Routing):      ~400 tokens  
+Phase 3 (Governance):   ~400 tokens
 Phase 4 (Project):      ~200 tokens
 Phase 5 (Output):       ~50 tokens
 ─────────────────────────────────
 Total:                  ~1,250 tokens
-
-Compare to full context load: 15,000+ tokens
-Savings: 90%+
 ```
 
 ## Anti-Patterns
@@ -142,14 +166,15 @@ Savings: 90%+
 ❌ DO NOT load full governance docs (only quick reference sections)
 ❌ DO NOT output lengthy status reports
 ❌ DO NOT ask "what would you like to do" - wait for task
+❌ DO NOT use old routes.json - use CHANNELS.json
 
 ## Success Criteria
 
 After [startup]:
-- [ ] Know how to route to any platform
-- [ ] Know fallback paths
+- [ ] Know bidirectional routes (how to send AND receive from any platform)
+- [ ] Know localhost tool locations
 - [ ] Know governance rules (no tangents, fix as you go, self-check first)
-- [ ] Know best performer for each task type
+- [ ] Know transport methods (HTTP, MCP, filesystem, sheets, github)
 - [ ] Know current project state (if specified)
 - [ ] Ready for immediate task execution
 
@@ -158,11 +183,12 @@ After [startup]:
 ```
 ## Ready
 **Memory:** Connected (localhost:8765)
-**Routes:** CW↔CD via n8n, GPT via sheets
+**Channels:** 13 bidirectional routes (CW↔CD↔N8N↔GPT)
+**Tools:** 15 localhost tools (SmartInbox, asset-vault, chatgpt-mcp...)
 **Governance:** Active (no input requests, fix as you go)
 **Project:** General
-**Last session:** 2026-01-12 - Shortcut system
-**Pending:** 4 actions (scan, rules, align, test)
+**Last session:** 2026-01-12 - Bidirectional routing
+**Pending:** 3 actions
 
 What's the task?
 ```
@@ -170,19 +196,16 @@ What's the task?
 ## Quick Reference After Startup
 
 ```
-Task Routing (Primary → Fallback):
-  GitHub      → Claude → Warp
-  Local files → Warp → -
-  Database    → Warp → n8n
-  Google      → Claude → n8n  
-  Canva       → Claude → -
-  Image gen   → Warp(FAL) → Claude
-  Audio       → n8n → Warp
-  Scheduled   → n8n → -
-  Research    → Claude → ChatGPT
-  Content     → Claude → ChatGPT
+Bidirectional Routing (Outbound | Inbound):
+  CW↔CD:   github handover | github handover
+  CW↔GPT:  sheets write | sheets read
+  CW↔N8N:  http webhook | github fetch
+  CD↔GPT:  mcp server | mcp server
+  CD↔N8N:  http webhook | filesystem
+  CD↔WARP: warp-tasks/ | warp-outputs/
+  ALL→GH:  delivery hub (handovers/, tasks/, outputs/, docs/)
 
-Fallback Chain: direct → n8n → sheets → github
+Transport Methods: HTTP | MCP | filesystem | sheets | github
 
 Rules: No user input | No tangents | Fix immediately | Self-check first (99%)
 ```
