@@ -1,13 +1,15 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "updated": "2026-01-12",
-  "stats": {"active": 32, "proposed": 22, "total": 54},
+  "stats": {"active": 34, "proposed": 20, "total": 54},
   "meta": {
     "shortcuts": {"status": "active", "platform": "any", "category": "system", "description": "List all available shortcuts"},
     "createshortcut": {"status": "active", "platform": "any", "category": "system", "description": "Create new shortcut and distribute to all platforms"}
   },
   "shortcuts": {
     "startup": {"status": "active", "platform": "any", "category": "system", "description": "Session bootstrap - load memory, routes, governance instantly"},
+    "scan": {"status": "active", "platform": "any", "category": "system", "description": "Check existing code/tools before creating new"},
+    "rules": {"status": "active", "platform": "any", "category": "system", "description": "Access/update governance docs"},
     "doc": {"status": "active", "platform": "claude", "category": "text", "description": "Create/edit Word documents"},
     "sheet": {"status": "active", "platform": "claude", "category": "text", "description": "Create/edit spreadsheets"},
     "slides": {"status": "active", "platform": "claude", "category": "text", "description": "Create/edit presentations"},
@@ -59,8 +61,6 @@
     "fetch": {"status": "proposed", "platform": "warp", "category": "system", "description": "Retrieve from vault"},
     "status": {"status": "proposed", "platform": "any", "category": "system", "description": "System health check"},
     "fix": {"status": "proposed", "platform": "warp", "category": "system", "description": "Run maintenance protocol"},
-    "resume": {"status": "proposed", "platform": "claude", "category": "system", "description": "Resume from handover"},
-    "scan": {"status": "proposed", "platform": "any", "category": "system", "description": "Check existing code/tools before creating new"},
-    "rules": {"status": "proposed", "platform": "any", "category": "system", "description": "Access/update governance docs"}
+    "resume": {"status": "proposed", "platform": "claude", "category": "system", "description": "Resume from handover"}
   }
 }
