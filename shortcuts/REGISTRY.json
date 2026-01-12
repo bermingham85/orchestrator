@@ -1,7 +1,7 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "updated": "2026-01-12",
-  "stats": {"active": 28, "proposed": 25, "total": 53},
+  "stats": {"active": 31, "proposed": 22, "total": 53},
   "meta": {
     "shortcuts": {"status": "active", "platform": "any", "category": "system", "description": "List all available shortcuts"},
     "createshortcut": {"status": "active", "platform": "any", "category": "system", "description": "Create new shortcut and distribute to all platforms"}
@@ -33,6 +33,9 @@
     "comic": {"status": "active", "platform": "claude", "category": "text", "description": "Comic script generation"},
     "meme": {"status": "active", "platform": "claude", "category": "image", "description": "Meme generation"},
     "newsletter": {"status": "active", "platform": "any", "category": "text", "description": "Email campaign builder"},
+    "handover": {"status": "active", "platform": "any", "category": "system", "description": "Save session context for next conversation"},
+    "context": {"status": "active", "platform": "any", "category": "system", "description": "Lazy-load context after first prompt"},
+    "compact": {"status": "active", "platform": "any", "category": "system", "description": "Save memory + context with cross-project tagging"},
     "characters": {"status": "proposed", "platform": "warp", "category": "image", "description": "Character reference sheet generation"},
     "poses": {"status": "proposed", "platform": "warp", "category": "image", "description": "Generate character pose set"},
     "backgrounds": {"status": "proposed", "platform": "warp", "category": "image", "description": "Scene background generation"},
@@ -55,8 +58,6 @@
     "fetch": {"status": "proposed", "platform": "warp", "category": "system", "description": "Retrieve from vault"},
     "status": {"status": "proposed", "platform": "any", "category": "system", "description": "System health check"},
     "fix": {"status": "proposed", "platform": "warp", "category": "system", "description": "Run maintenance protocol"},
-    "compact": {"status": "proposed", "platform": "claude", "category": "system", "description": "Compress conversation"},
-    "handover": {"status": "proposed", "platform": "claude", "category": "system", "description": "Session handoff"},
     "resume": {"status": "proposed", "platform": "claude", "category": "system", "description": "Resume from handover"}
   }
 }
