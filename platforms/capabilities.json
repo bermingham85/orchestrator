@@ -1,30 +1,136 @@
 {
+  "version": "1.1.0",
   "CW": {
     "name": "Claude Web",
     "can_reach": ["n8n_public", "github", "sheets", "memory_api_tunnel"],
     "cannot_reach": ["localhost", "CD_direct", "GPT_direct"],
     "buddy_for": ["web_search", "create_artifacts", "mcp_tools"],
-    "needs_buddy_for": ["local_files", "run_python_local", "git_operations"]
+    "needs_buddy_for": ["local_files", "run_python_local", "git_operations"],
+    "routes_to": {
+      "CD": {"via": "github:handovers/", "method": "handover"},
+      "CC": {"via": "github:tasks/", "method": "task_file"},
+      "GPT": {"via": "sheets:AI_BRIDGE", "method": "sheet_bridge"},
+      "N8N": {"via": "https://n8n.bermech.com/webhook/", "method": "http"}
+    },
+    "receives_from": {
+      "CD": {"via": "github:handovers/", "fetch": "web_fetch"},
+      "CC": {"via": "github:outputs/", "fetch": "web_fetch"},
+      "GPT": {"via": "sheets:AI_BRIDGE", "fetch": "google_mcp"},
+      "N8N": {"via": "github:outputs/", "fetch": "web_fetch"}
+    }
   },
   "CD": {
     "name": "Claude Desktop",
     "can_reach": ["localhost", "n8n_local", "github", "sheets", "memory_api_local", "filesystem"],
-    "cannot_reach": ["CW_direct", "GPT_direct"],
+    "cannot_reach": ["CW_direct", "GPT_web_direct"],
     "buddy_for": ["local_files", "run_python_local", "git_operations", "mcp_servers"],
-    "needs_buddy_for": ["web_search"]
+    "needs_buddy_for": ["web_search"],
+    "routes_to": {
+      "CW": {"via": "github:handovers/", "method": "push"},
+      "CC": {"via": "filesystem:C:/Users/bermi/Projects/", "method": "file_write"},
+      "GPT": {"via": "chatgpt-mcp-server:3000", "method": "mcp"},
+      "N8N": {"via": "http://192.168.50.246:5678/webhook/", "method": "http"},
+      "WARP": {"via": "filesystem:warp-tasks/", "method": "file_write"}
+    },
+    "receives_from": {
+      "CW": {"via": "github:handovers/", "method": "github_mcp"},
+      "CC": {"via": "filesystem:C:/Users/bermi/Projects/", "method": "file_read"},
+      "GPT": {"via": "chatgpt-mcp-server:3000", "method": "mcp"},
+      "N8N": {"via": "filesystem:n8n-outputs/", "method": "file_read"},
+      "WARP": {"via": "filesystem:warp-outputs/", "method": "file_read"}
+    }
+  },
+  "CC": {
+    "name": "Claude Code",
+    "can_reach": ["localhost", "github", "filesystem", "terminal"],
+    "cannot_reach": ["CW_direct", "GPT_direct"],
+    "buddy_for": ["agentic_coding", "git_operations", "shell_commands"],
+    "needs_buddy_for": ["web_search", "image_generation"],
+    "routes_to": {
+      "CW": {"via": "github:outputs/", "method": "git_push"},
+      "CD": {"via": "filesystem", "method": "file_write"},
+      "WARP": {"via": "terminal", "method": "shell_exec"}
+    },
+    "receives_from": {
+      "CW": {"via": "github:tasks/", "method": "git_pull"},
+      "CD": {"via": "filesystem", "method": "file_read"},
+      "WARP": {"via": "stdout", "method": "capture"}
+    }
   },
   "GPT": {
     "name": "ChatGPT",
     "can_reach": ["n8n_tunnel", "github", "sheets", "memory_api_tunnel"],
     "cannot_reach": ["localhost", "CW_direct", "CD_direct"],
     "buddy_for": ["dalle_images", "code_interpreter", "web_browsing"],
-    "needs_buddy_for": ["local_files", "mcp_private"]
+    "needs_buddy_for": ["local_files", "mcp_private"],
+    "routes_to": {
+      "CW": {"via": "sheets:AI_BRIDGE", "method": "sheet_write"},
+      "N8N": {"via": "chatgpt-mcp-server", "method": "mcp_tools"}
+    },
+    "receives_from": {
+      "CW": {"via": "sheets:AI_BRIDGE", "method": "sheet_read"},
+      "N8N": {"via": "gpt_actions", "method": "api_callback"}
+    }
+  },
+  "GPTD": {
+    "name": "ChatGPT Desktop",
+    "can_reach": ["localhost", "filesystem_via_mcp", "n8n_local"],
+    "cannot_reach": ["CW_direct"],
+    "buddy_for": ["dalle_images", "code_interpreter", "filesystem_via_mcp"],
+    "needs_buddy_for": ["web_search"],
+    "routes_to": {
+      "CD": {"via": "filesystem:ai-bridge/", "method": "mcp_file_write"},
+      "N8N": {"via": "chatgpt-mcp-server", "method": "mcp_n8n_tools"}
+    },
+    "receives_from": {
+      "CD": {"via": "filesystem:ai-bridge/", "method": "mcp_file_read"},
+      "N8N": {"via": "chatgpt-mcp-server", "method": "mcp_callback"}
+    }
   },
   "N8N": {
     "name": "n8n",
     "can_reach": ["ALL"],
     "cannot_reach": [],
     "buddy_for": ["routing", "scheduling", "api_calls", "webhooks"],
-    "needs_buddy_for": ["ai_reasoning"]
+    "needs_buddy_for": ["ai_reasoning"],
+    "routes_to": {
+      "CW": {"via": "github:outputs/", "method": "github_node"},
+      "CD": {"via": "filesystem:n8n-outputs/", "method": "file_write"},
+      "GPT": {"via": "openai_api", "method": "api_call"},
+      "GH": {"via": "github_node", "method": "api"}
+    },
+    "receives_from": {
+      "CW": {"via": "webhook", "method": "http"},
+      "CD": {"via": "webhook", "method": "http"},
+      "GPT": {"via": "chatgpt-mcp-server", "method": "mcp"},
+      "GH": {"via": "webhook", "method": "github_webhook"}
+    }
+  },
+  "WARP": {
+    "name": "Warp Terminal",
+    "can_reach": ["filesystem", "git", "http_curl"],
+    "cannot_reach": ["CW_direct", "GPT_direct"],
+    "buddy_for": ["shell_scripts", "git_operations", "system_admin"],
+    "needs_buddy_for": ["ai_reasoning"],
+    "routes_to": {
+      "CD": {"via": "filesystem:warp-outputs/", "method": "file_write"},
+      "CC": {"via": "stdout", "method": "pipe"},
+      "GH": {"via": "git push", "method": "git"}
+    },
+    "receives_from": {
+      "CD": {"via": "filesystem:warp-tasks/", "method": "file_read"},
+      "CC": {"via": "terminal", "method": "stdin"}
+    }
+  },
+  "GH": {
+    "name": "GitHub",
+    "role": "delivery_hub",
+    "receives_from_all": true,
+    "paths": {
+      "handovers": "communications/handovers/",
+      "tasks": "tasks/",
+      "outputs": "outputs/",
+      "docs": "docs/"
+    }
   }
 }
