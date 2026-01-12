@@ -1,0 +1,228 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-01-12",
+
+  "tools": {
+    "prompt-engineer-agent": {
+      "name": "Prompt Engineer Agent",
+      "description": "Converts plain English to structured prompts using Master Prompt Library",
+      "repo": "bermingham85/prompt-engineer-agent",
+      "type": "frontend+n8n",
+      "localhost": {
+        "frontend": "file:///C:/Users/bermi/Projects/prompt-engineer-agent/index.html",
+        "webhook": "http://192.168.1.120:5678/webhook/prompt-engineer"
+      },
+      "usage": {
+        "method": "UI",
+        "steps": [
+          "1. Open index.html (or desktop shortcut)",
+          "2. Enter plain English description",
+          "3. Click Generate Prompt",
+          "4. Copy output to Claude"
+        ]
+      },
+      "trigger_from": {
+        "CD": "Open file:// URL or run index.html",
+        "CW": "Cannot trigger directly - use n8n webhook",
+        "GPT": "Call webhook via MCP"
+      },
+      "status": "active"
+    },
+
+    "smartinbox": {
+      "name": "SmartInbox Email Agent",
+      "description": "AI email triage - Gmail/Outlook, priority detection, draft generation, chatbot",
+      "repo": "bermingham85/Smartinbox",
+      "type": "webapp",
+      "localhost": {
+        "backend": "http://localhost:8000",
+        "frontend": "http://localhost:3000"
+      },
+      "cloud": "https://smartinbox-15.preview.emergentagent.com",
+      "usage": {
+        "method": "Web UI",
+        "steps": [
+          "1. Open cloud URL or start local servers",
+          "2. Connect Gmail/Outlook via OAuth",
+          "3. Sync emails",
+          "4. Use AI analysis and chatbot"
+        ]
+      },
+      "trigger_from": {
+        "CD": "Open browser to URL",
+        "CW": "web_fetch to API endpoints",
+        "N8N": "HTTP Request to API"
+      },
+      "api_endpoints": {
+        "health": "GET /api/health",
+        "fetch": "POST /api/poc/fetch",
+        "analyze": "POST /api/poc/analyze",
+        "chat": "POST /api/chat"
+      },
+      "status": "active"
+    },
+
+    "asset-vault-app": {
+      "name": "Asset Vault",
+      "description": "Character asset management with FAL.ai image generation",
+      "repo": "bermingham85/asset-vault-app",
+      "type": "webapp",
+      "localhost": {
+        "backend": "http://localhost:8000",
+        "frontend": "http://localhost:5173"
+      },
+      "usage": {
+        "method": "Web UI or API",
+        "steps": [
+          "1. Start backend: uvicorn main:app",
+          "2. Start frontend: npm run dev",
+          "3. Create characters, generate images"
+        ]
+      },
+      "trigger_from": {
+        "CD": "HTTP requests to API",
+        "N8N": "Webhook to trigger generation",
+        "CW": "Cannot access localhost"
+      },
+      "api_endpoints": {
+        "generate": "POST /api/generate",
+        "characters": "GET /api/characters"
+      },
+      "status": "phase2-dev"
+    },
+
+    "chatgpt-mcp-server": {
+      "name": "ChatGPT MCP Server",
+      "description": "Gives ChatGPT full Windows access - filesystem, commands, n8n",
+      "repo": "bermingham85/chatgpt-mcp-server",
+      "type": "mcp-server",
+      "localhost": {
+        "server": "http://localhost:3000",
+        "sse": "http://localhost:3000/sse"
+      },
+      "usage": {
+        "method": "MCP",
+        "steps": [
+          "1. cd C:/Users/bermi/Projects/chatgpt-mcp-server",
+          "2. npm start",
+          "3. In ChatGPT: Settings → MCP → Add http://localhost:3000/sse"
+        ]
+      },
+      "tools_provided": [
+        "read_file", "write_file", "list_directory", "create_directory",
+        "delete_file", "search_files", "get_file_stats", "move_file",
+        "execute_command",
+        "n8n_list_workflows", "n8n_get_workflow", "n8n_activate_workflow",
+        "n8n_deactivate_workflow", "n8n_execute_workflow", "n8n_list_executions"
+      ],
+      "enables_channel": "GPTD_CD",
+      "status": "active"
+    },
+
+    "memory-api": {
+      "name": "Memory API",
+      "description": "Centralized memory and context persistence",
+      "repo": "bermingham85/orchestrator",
+      "type": "api",
+      "localhost": {
+        "server": "http://localhost:8765"
+      },
+      "tunnel": "https://memory.bermech.com",
+      "usage": {
+        "method": "HTTP API",
+        "steps": [
+          "1. Start memory server",
+          "2. GET /api/context for full context",
+          "3. POST /api/memory/revision to update"
+        ]
+      },
+      "api_endpoints": {
+        "status": "GET /api/memory/status",
+        "context": "GET /api/context",
+        "playbook": "GET /api/playbook",
+        "revision": "POST /api/memory/revision",
+        "skills": "POST /api/skills"
+      },
+      "status": "active"
+    },
+
+    "n8n-task-dispatcher": {
+      "name": "n8n Task Dispatcher",
+      "description": "Central webhook for routing tasks to appropriate workflows",
+      "repo": "bermingham85/bermech-n8n-workflows",
+      "type": "n8n-workflow",
+      "localhost": {
+        "webhook": "http://192.168.50.246:5678/webhook/task-dispatcher"
+      },
+      "cloud": "https://n8n.bermech.com/webhook/task-dispatcher",
+      "usage": {
+        "method": "Webhook",
+        "payload": {
+          "task": "string",
+          "source": "CW|CD|GPT",
+          "context": "object"
+        }
+      },
+      "status": "active"
+    },
+
+    "mcp-puppet-pipeline": {
+      "name": "MCP Puppet Pipeline",
+      "description": "Browser automation for Midjourney and other UI tasks",
+      "repo": "bermingham85/mcp-puppet-pipeline",
+      "type": "automation",
+      "usage": {
+        "method": "Playwright/Puppeteer scripts",
+        "trigger": "n8n or direct execution"
+      },
+      "status": "active"
+    },
+
+    "bermech-email-tagger": {
+      "name": "Email Tagger",
+      "description": "AI-powered email classification and tagging",
+      "repo": "bermingham85/bermech-email-tagger",
+      "type": "n8n-workflow",
+      "status": "active"
+    },
+
+    "balding-pig-automation": {
+      "name": "Balding Pig Automation",
+      "description": "Product generation with Printify, Notion, n8n",
+      "repo": "bermingham85/balding-pig-automation",
+      "type": "automation-suite",
+      "status": "active"
+    },
+
+    "jesse-novel-factory": {
+      "name": "Jesse Novel Factory",
+      "description": "AI-powered novel to audiobook pipeline",
+      "repo": "bermingham85/jesse-novel-factory",
+      "type": "automation-suite",
+      "status": "active"
+    },
+
+    "gdrive-file-aggregator": {
+      "name": "GDrive File Aggregator",
+      "description": "Merges Google Drive documents/spreadsheets",
+      "repo": "bermingham85/gdrive-file-aggregator",
+      "type": "n8n-workflow",
+      "status": "active"
+    }
+  },
+
+  "by_trigger_method": {
+    "http_webhook": ["n8n-task-dispatcher", "prompt-engineer-agent", "smartinbox"],
+    "mcp_tools": ["chatgpt-mcp-server", "memory-api"],
+    "web_ui": ["smartinbox", "asset-vault-app", "prompt-engineer-agent"],
+    "file_trigger": ["mcp-puppet-pipeline"],
+    "n8n_workflow": ["bermech-email-tagger", "gdrive-file-aggregator"]
+  },
+
+  "quick_start": {
+    "CD": "All tools accessible via filesystem MCP + HTTP",
+    "CW": "HTTP tools only (no localhost) - use cloud URLs or n8n proxy",
+    "GPT": "Start chatgpt-mcp-server for full access",
+    "WARP": "Direct execution of all local tools"
+  }
+}

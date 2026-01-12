@@ -1,0 +1,196 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-01-12",
+  "delivery_hub": "github:bermingham85/orchestrator",
+  
+  "platforms": {
+    "CW": {"name": "Claude Web", "url": "https://claude.ai"},
+    "CD": {"name": "Claude Desktop", "app": "Claude.exe"},
+    "CC": {"name": "Claude Code", "cli": "claude"},
+    "CI": {"name": "Claude iOS", "app": "Claude"},
+    "GPT": {"name": "ChatGPT Web", "url": "https://chatgpt.com"},
+    "GPTD": {"name": "ChatGPT Desktop", "app": "ChatGPT.exe"},
+    "GPTI": {"name": "ChatGPT iOS", "app": "ChatGPT"},
+    "N8N": {"name": "n8n", "url": "http://192.168.50.246:5678", "cloud": "https://n8n.bermech.com"},
+    "WARP": {"name": "Warp Terminal", "app": "Warp.exe"},
+    "GH": {"name": "GitHub", "url": "https://github.com/bermingham85"}
+  },
+
+  "channels": {
+    "CW_CD": {
+      "name": "Claude Web ↔ Claude Desktop",
+      "outbound": {
+        "method": "handover",
+        "via": "github",
+        "path": "communications/handovers/",
+        "trigger": "Push handover doc, user opens CD"
+      },
+      "inbound": {
+        "method": "handover",
+        "via": "github",
+        "path": "communications/handovers/",
+        "trigger": "CD pushes handover, CW fetches via web_fetch"
+      }
+    },
+    "CW_CC": {
+      "name": "Claude Web ↔ Claude Code",
+      "outbound": {
+        "method": "github",
+        "via": "tasks/",
+        "trigger": "Push task file, CC watches repo"
+      },
+      "inbound": {
+        "method": "github",
+        "via": "outputs/",
+        "trigger": "CC commits output, CW fetches"
+      }
+    },
+    "CW_GPT": {
+      "name": "Claude Web ↔ ChatGPT",
+      "outbound": {
+        "method": "sheets",
+        "sheet_id": "AI_BRIDGE",
+        "tab": "CW_TO_GPT",
+        "trigger": "Write to sheet, n8n detects, webhooks GPT"
+      },
+      "inbound": {
+        "method": "sheets",
+        "sheet_id": "AI_BRIDGE",
+        "tab": "GPT_TO_CW",
+        "trigger": "GPT writes, CW reads via Google MCP"
+      },
+      "alternative": {
+        "method": "n8n",
+        "webhook": "https://n8n.bermech.com/webhook/ai-router"
+      }
+    },
+    "CW_N8N": {
+      "name": "Claude Web ↔ n8n",
+      "outbound": {
+        "method": "HTTP",
+        "url": "https://n8n.bermech.com/webhook/{workflow-path}",
+        "trigger": "Direct webhook call"
+      },
+      "inbound": {
+        "method": "webhook",
+        "target": "Cannot push to CW directly",
+        "workaround": "n8n writes to GitHub, CW fetches"
+      }
+    },
+    "CD_CC": {
+      "name": "Claude Desktop ↔ Claude Code",
+      "outbound": {
+        "method": "filesystem",
+        "path": "C:/Users/bermi/Projects/",
+        "trigger": "Write task file, CC picks up"
+      },
+      "inbound": {
+        "method": "filesystem",
+        "path": "C:/Users/bermi/Projects/",
+        "trigger": "CC writes output, CD reads"
+      },
+      "alternative": {
+        "method": "github",
+        "path": "tasks/"
+      }
+    },
+    "CD_GPT": {
+      "name": "Claude Desktop ↔ ChatGPT Desktop",
+      "outbound": {
+        "method": "mcp-server",
+        "server": "chatgpt-mcp-server",
+        "port": 3000,
+        "trigger": "Direct tool calls via MCP"
+      },
+      "inbound": {
+        "method": "mcp-server",
+        "server": "chatgpt-mcp-server",
+        "trigger": "GPT calls filesystem tools, CD reads results"
+      }
+    },
+    "CD_N8N": {
+      "name": "Claude Desktop ↔ n8n",
+      "outbound": {
+        "method": "HTTP",
+        "url": "http://192.168.50.246:5678/webhook/{path}",
+        "trigger": "Direct webhook call via n8n MCP"
+      },
+      "inbound": {
+        "method": "filesystem",
+        "path": "C:/Users/bermi/Projects/n8n-outputs/",
+        "trigger": "n8n writes file, CD reads"
+      }
+    },
+    "CD_WARP": {
+      "name": "Claude Desktop ↔ Warp",
+      "outbound": {
+        "method": "filesystem",
+        "path": "C:/Users/bermi/Projects/warp-tasks/",
+        "trigger": "Write task, Warp picks up"
+      },
+      "inbound": {
+        "method": "filesystem",
+        "path": "C:/Users/bermi/Projects/warp-outputs/",
+        "trigger": "Warp writes, CD reads"
+      }
+    },
+    "CC_WARP": {
+      "name": "Claude Code ↔ Warp",
+      "outbound": {
+        "method": "terminal",
+        "trigger": "CC can execute shell commands directly"
+      },
+      "inbound": {
+        "method": "stdout",
+        "trigger": "Warp output captured by CC"
+      }
+    },
+    "GPT_N8N": {
+      "name": "ChatGPT ↔ n8n",
+      "outbound": {
+        "method": "mcp-server",
+        "via": "chatgpt-mcp-server",
+        "tools": ["n8n_list_workflows", "n8n_execute_workflow"],
+        "trigger": "Direct n8n control"
+      },
+      "inbound": {
+        "method": "webhook",
+        "via": "GPT Actions",
+        "trigger": "n8n calls GPT API"
+      }
+    },
+    "GPTD_CD": {
+      "name": "ChatGPT Desktop ↔ Claude Desktop",
+      "bidirectional": {
+        "method": "filesystem",
+        "path": "C:/Users/bermi/Projects/ai-bridge/",
+        "trigger": "Both read/write same location via MCP"
+      }
+    },
+    "N8N_GH": {
+      "name": "n8n ↔ GitHub",
+      "bidirectional": {
+        "method": "API",
+        "trigger": "n8n GitHub node, webhooks for inbound"
+      }
+    },
+    "ALL_GH": {
+      "name": "All Platforms → GitHub (Delivery Hub)",
+      "note": "All final outputs delivered to GitHub",
+      "paths": {
+        "handovers": "communications/handovers/",
+        "tasks": "tasks/",
+        "outputs": "outputs/",
+        "docs": "docs/"
+      }
+    }
+  },
+
+  "transport_methods": {
+    "HTTP": {"requires": "Network access", "best_for": "Webhooks, APIs"},
+    "MCP": {"requires": "MCP server running", "best_for": "Tool integration"},
+    "filesystem": {"requires": "Local access", "best_for": "Desktop apps"},
+    "sheets": {"requires": "Google Sheets MCP", "best_for": "Cross-AI bridge"},
+    "github": {"requires": "GitHub access", "best_for": "Persistent delivery"}
+  }
+}
