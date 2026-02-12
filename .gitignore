@@ -7,3 +7,5 @@ Thumbs.db
 secrets/
 credentials.json
 node_modules/
+
+venv/
